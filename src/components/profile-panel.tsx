@@ -270,11 +270,11 @@ export function ProfilePanel({
           </button>
           <div
             aria-hidden="true"
-            className="absolute right-8 top-8"
+            className="absolute right-6 bottom-6"
             style={{
-              width: 70,
-              height: 70,
-              opacity: 0.55,
+              width: 64,
+              height: 64,
+              opacity: 0.5,
               backgroundImage: "url(/assets/symbol-paper.svg)",
               backgroundSize: "contain",
               backgroundPosition: "center",
