@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import { Header } from "./header";
 import { FilterBar } from "./filter-bar";
 import { ResultList } from "./result-list";
+import { ProfilePanel } from "./profile-panel";
 import type { Locale } from "@/lib/i18n";
 import type { MemberTypeId } from "@/lib/taxonomies";
 import type { PilotProfile, SpecialtyId } from "@/types/pilot";
@@ -127,6 +128,14 @@ export function MapApp({ pilots }: MapAppProps) {
             onSelect={setSelected}
             locale={locale}
           />
+          {selected && (
+            <ProfilePanel
+              key={selected.id}
+              pilot={selected}
+              locale={locale}
+              onClose={() => setSelected(null)}
+            />
+          )}
         </div>
       </main>
     </div>
