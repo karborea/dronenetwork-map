@@ -1,7 +1,8 @@
 "use client";
 
+import { Icon } from "../icon";
 import { TextInput } from "../ui/text-input";
-import { DN_MEMBER_TYPES, DN_SPECIALTIES, type MemberTypeId } from "@/lib/taxonomies";
+import { DN_MEMBER_TYPES, type MemberTypeId } from "@/lib/taxonomies";
 import type { Locale } from "@/lib/i18n";
 import type { SpecialtyId } from "@/types/pilot";
 
@@ -12,13 +13,13 @@ interface MobileFilterStripProps {
   memberType: MemberTypeId;
   onMemberTypeChange: (m: MemberTypeId) => void;
   activeSpecs: SpecialtyId[];
-  onToggleSpec: (id: SpecialtyId) => void;
+  onOpenSpecsSheet: () => void;
 }
 
 /**
- * Mobile filter strip — postal search + filter icon (decorative for now) on
- * top row, then a horizontally scrollable chip row mixing member-type tabs
- * (in ink/paper) with specialty chips (in iris) separated by a thin divider.
+ * Mobile filter strip — postal search on top row, then a horizontally
+ * scrollable row of member-type tabs followed by a "Spécialités" button that
+ * opens the full filter sheet (specialty chips can't fit inline on mobile).
  */
 export function MobileFilterStrip({
   locale,
@@ -27,7 +28,7 @@ export function MobileFilterStrip({
   memberType,
   onMemberTypeChange,
   activeSpecs,
-  onToggleSpec,
+  onOpenSpecsSheet,
 }: MobileFilterStripProps) {
   const t = (fr: string, en: string) => (locale === "fr" ? fr : en);
 
@@ -36,7 +37,7 @@ export function MobileFilterStrip({
       className="relative z-40 flex-shrink-0 bg-white"
       style={{ borderBottom: "1px solid var(--border)" }}
     >
-      {/* Search row — filter button removed for MVP since chips are inline below */}
+      {/* Search row */}
       <div className="px-3.5 pt-2.5 pb-2">
         <TextInput
           value={query}
@@ -46,7 +47,7 @@ export function MobileFilterStrip({
         />
       </div>
 
-      {/* Chip row — horizontal scroll */}
+      {/* Member-type tabs + Spécialités button (horizontal scroll) */}
       <div className="scrollbar-hidden flex gap-2 overflow-x-auto px-3.5 pt-1 pb-3">
         {DN_MEMBER_TYPES.map((m) => {
           const active = memberType === m.id;
@@ -74,25 +75,32 @@ export function MobileFilterStrip({
           aria-hidden="true"
         />
 
-        {DN_SPECIALTIES.map((s) => {
-          const active = activeSpecs.includes(s.id);
-          return (
-            <button
-              key={s.id}
-              type="button"
-              onClick={() => onToggleSpec(s.id)}
-              aria-pressed={active}
-              className={`flex-shrink-0 cursor-pointer whitespace-nowrap rounded-full border px-3 py-2 font-[family-name:var(--font-display)] text-[11px] font-medium uppercase tracking-[.07em] transition-colors ${
-                active
-                  ? "border-iris bg-iris text-white"
-                  : "bg-white text-ink"
-              }`}
-              style={!active ? { borderColor: "var(--border-strong)" } : undefined}
-            >
-              {locale === "fr" ? s.fr : s.en}
-            </button>
-          );
-        })}
+        <button
+          type="button"
+          onClick={onOpenSpecsSheet}
+          className={`flex-shrink-0 cursor-pointer inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border px-3 py-2 font-[family-name:var(--font-display)] text-[11px] font-semibold uppercase tracking-[.05em] transition-colors ${
+            activeSpecs.length > 0
+              ? "border-iris bg-[color:var(--color-iris-100)] text-iris-700"
+              : "bg-white text-ink"
+          }`}
+          style={
+            activeSpecs.length === 0
+              ? { borderColor: "var(--border-strong)" }
+              : undefined
+          }
+        >
+          <Icon
+            name="filter"
+            size={12}
+            stroke={activeSpecs.length > 0 ? "var(--color-iris-700)" : "var(--color-ink)"}
+          />
+          {t("Spécialités", "Specialties")}
+          {activeSpecs.length > 0 && (
+            <span className="ml-0.5 inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-iris px-1.5 text-[10px] font-bold text-white">
+              {activeSpecs.length}
+            </span>
+          )}
+        </button>
       </div>
     </div>
   );

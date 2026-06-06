@@ -34,8 +34,13 @@ export function MobileBottomSheet({
 
   return (
     <div
-      className="absolute bottom-0 left-0 right-0 z-40 flex flex-col overflow-hidden"
+      className="flex flex-col overflow-hidden"
       style={{
+        position: "absolute",
+        bottom: 0,
+        left: 0,
+        right: 0,
+        zIndex: 1000,
         height: expanded ? "78%" : 268,
         background: "var(--color-paper)",
         borderTopLeftRadius: 20,

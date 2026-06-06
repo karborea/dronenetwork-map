@@ -8,6 +8,7 @@ import { ResultList } from "./result-list";
 import { ProfilePanel } from "./profile-panel";
 import { MobileHeader } from "./mobile/mobile-header";
 import { MobileFilterStrip } from "./mobile/mobile-filter-strip";
+import { MobileFilterSheet } from "./mobile/mobile-filter-sheet";
 import { MobileBottomSheet } from "./mobile/mobile-bottom-sheet";
 import { useIsMobile } from "@/lib/use-is-mobile";
 import type { Locale } from "@/lib/i18n";
@@ -40,6 +41,7 @@ export function MapApp({ pilots }: MapAppProps) {
   const [activeSpecs, setActiveSpecs] = useState<SpecialtyId[]>([]);
   const [selected, setSelected] = useState<PilotProfile | null>(null);
   const [sheetExpanded, setSheetExpanded] = useState(false);
+  const [specsSheetOpen, setSpecsSheetOpen] = useState(false);
 
   const toggleSpec = (id: SpecialtyId) =>
     setActiveSpecs((prev) =>
@@ -59,6 +61,7 @@ export function MapApp({ pilots }: MapAppProps) {
     setActiveSpecs([]);
     setSelected(null);
     setSheetExpanded(false);
+    setSpecsSheetOpen(false);
   };
 
   const handleRegister = () => {
@@ -107,7 +110,7 @@ export function MapApp({ pilots }: MapAppProps) {
           memberType={memberType}
           onMemberTypeChange={setMemberType}
           activeSpecs={activeSpecs}
-          onToggleSpec={toggleSpec}
+          onOpenSpecsSheet={() => setSpecsSheetOpen(true)}
         />
 
         <main className="relative flex flex-1 overflow-hidden">
@@ -136,6 +139,16 @@ export function MapApp({ pilots }: MapAppProps) {
             mobile
           />
         )}
+
+        <MobileFilterSheet
+          open={specsSheetOpen}
+          onClose={() => setSpecsSheetOpen(false)}
+          locale={locale}
+          activeSpecs={activeSpecs}
+          onToggleSpec={toggleSpec}
+          onClearSpecs={clearSpecs}
+          count={filtered.length}
+        />
       </div>
     );
   }
