@@ -91,6 +91,36 @@ h2, .h2 {
 }
 
 /* ============================================================
+   PROFILE PANEL — slide-in/out animations
+   ============================================================ */
+
+@keyframes dn-panel-slide-in {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes dn-panel-slide-out {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+.dn-panel-enter {
+  animation: dn-panel-slide-in 0.28s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+}
+
+.dn-panel-exit {
+  animation: dn-panel-slide-out 0.22s cubic-bezier(0.6, 0.2, 0.8, 0.6) forwards;
+}
+
+/* ============================================================
    LEAFLET — brand-tinted map controls and custom pin styles.
    Used by src/components/map-canvas.tsx.
    ============================================================ */

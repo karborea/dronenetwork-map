@@ -186,6 +186,16 @@ export function ProfilePanel({
   // State resets per-pilot via the `key` prop on the parent — see map-app.tsx
   const [phoneRevealed, setPhoneRevealed] = useState(false);
   const [smsToast, setSmsToast] = useState(false);
+  const [exiting, setExiting] = useState(false);
+
+  // Run the slide-out CSS animation before calling onClose() upstream.
+  // Internal close only — external close (e.g. onHome reset) snap-closes.
+  const PANEL_EXIT_MS = 220;
+  const handleClose = () => {
+    if (exiting) return;
+    setExiting(true);
+    setTimeout(onClose, PANEL_EXIT_MS + 10);
+  };
 
   const k = DN_KIND_LABEL[pilot.kind];
   const isPro = !!pilot.pro;
@@ -230,7 +240,9 @@ export function ProfilePanel({
       }}
     >
       <div
-        className="relative h-full overflow-y-auto scrollbar-hidden"
+        className={`relative h-full overflow-y-auto scrollbar-hidden ${
+          exiting ? "dn-panel-exit" : "dn-panel-enter"
+        }`}
         style={{
           width: mobile ? "100%" : 600,
           maxWidth: mobile ? "100%" : "92%",
@@ -249,7 +261,7 @@ export function ProfilePanel({
         >
           <button
             type="button"
-            onClick={onClose}
+            onClick={handleClose}
             aria-label={t("Fermer", "Close")}
             className="absolute right-4 top-4 flex h-[38px] w-[38px] cursor-pointer items-center justify-center rounded-full border-none"
             style={{ background: "rgba(10,11,14,.4)" }}
