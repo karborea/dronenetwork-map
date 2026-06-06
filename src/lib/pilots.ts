@@ -3,12 +3,14 @@ import type { PilotProfile } from "@/types/pilot";
 /**
  * Drone Network — pilot data adapter.
  *
- * Today: returns mock pilots so we can build the UI without WordPress.
- * Tomorrow: swap the body of getPilots() for a fetch call to the WP REST endpoint.
+ * Lookup order:
+ *   1. If WP_API_URL env var is set, fetch from `${WP_API_URL}/wp-json/dn/v1/pilots`
+ *      with ISR (60s revalidation).
+ *   2. If the fetch fails or no env var is set, fall back to the in-repo mock.
  *
- * The mock and the API must return the SAME shape. The contract is in
- * src/types/pilot.ts. If you change the contract here, update the type and
- * notify whoever is building the WordPress side.
+ * The API contract is locked in src/types/pilot.ts. The WordPress side
+ * (drone-network-core plugin) returns this exact shape via
+ * GET /wp-json/dn/v1/pilots.
  */
 
 const MOCK_PILOTS: PilotProfile[] = [
@@ -329,20 +331,63 @@ const MOCK_PILOTS: PilotProfile[] = [
 
 /**
  * Returns every approved + active pilot for the map.
- * Calls the WP REST endpoint in production; returns mocks in dev until WP is ready.
+ * - Production: fetch from WP REST endpoint, ISR-cached for 60s
+ * - Dev (no env var) or WP failure: fall back to mock
  */
 export async function getPilots(): Promise<PilotProfile[]> {
-  // TODO: when WordPress is ready, replace with:
-  //   const res = await fetch(`${process.env.WP_API_URL}/dn/v1/pilots`, {
-  //     next: { revalidate: 60 },
-  //   });
-  //   if (!res.ok) throw new Error(`WP /dn/v1/pilots returned ${res.status}`);
-  //   return res.json();
-  return MOCK_PILOTS;
+  const wpUrl = process.env.WP_API_URL?.replace(/\/$/, "");
+
+  if (!wpUrl) {
+    return MOCK_PILOTS;
+  }
+
+  try {
+    const res = await fetch(`${wpUrl}/wp-json/dn/v1/pilots`, {
+      next: { revalidate: 60 },
+      headers: { Accept: "application/json" },
+    });
+
+    if (!res.ok) {
+      console.warn(`[pilots] WP returned ${res.status}; falling back to mock`);
+      return MOCK_PILOTS;
+    }
+
+    const data = (await res.json()) as PilotProfile[];
+
+    // If WP has no approved members yet, show the mock so the UI isn't empty
+    // during early testing. Remove this once Annie-Pier has seeded real members.
+    if (!Array.isArray(data) || data.length === 0) {
+      return MOCK_PILOTS;
+    }
+
+    return data;
+  } catch (err) {
+    console.error("[pilots] fetch failed; falling back to mock:", err);
+    return MOCK_PILOTS;
+  }
 }
 
 /** Returns a single pilot by slug, or null if not found. */
 export async function getPilotBySlug(slug: string): Promise<PilotProfile | null> {
+  const wpUrl = process.env.WP_API_URL?.replace(/\/$/, "");
+
+  if (wpUrl) {
+    try {
+      const res = await fetch(`${wpUrl}/wp-json/dn/v1/pilots/${slug}`, {
+        next: { revalidate: 60 },
+        headers: { Accept: "application/json" },
+      });
+      if (res.ok) {
+        return (await res.json()) as PilotProfile;
+      }
+      if (res.status === 404) {
+        return null;
+      }
+    } catch (err) {
+      console.error("[pilot-by-slug] fetch failed; falling back to mock:", err);
+    }
+  }
+
   const pilots = await getPilots();
   return pilots.find((p) => p.slug === slug) ?? null;
 }
