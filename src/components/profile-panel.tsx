@@ -190,11 +190,11 @@ export function ProfilePanel({
 
   // Run the slide-out CSS animation before calling onClose() upstream.
   // Internal close only — external close (e.g. onHome reset) snap-closes.
-  const PANEL_EXIT_MS = 220;
+  const PANEL_EXIT_MS = 260;
   const handleClose = () => {
     if (exiting) return;
     setExiting(true);
-    setTimeout(onClose, PANEL_EXIT_MS + 10);
+    setTimeout(onClose, PANEL_EXIT_MS + 20);
   };
 
   const k = DN_KIND_LABEL[pilot.kind];
