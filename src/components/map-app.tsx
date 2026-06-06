@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { Header } from "./header";
 import { FilterBar } from "./filter-bar";
+import { ResultList } from "./result-list";
 import type { Locale } from "@/lib/i18n";
 import type { MemberTypeId } from "@/lib/taxonomies";
 import type { PilotProfile, SpecialtyId } from "@/types/pilot";
@@ -13,8 +14,8 @@ interface MapAppProps {
 
 /**
  * Root client wrapper for the map experience. Holds the shared interactive
- * state (locale, filters, selected pilot, register modal) and renders the
- * Header + FilterBar + main map area.
+ * state (locale, filters, selected pilot) and lays out Header · FilterBar ·
+ * (ResultList | MapCanvas) · ProfilePanel.
  *
  * Pilots come from the parent Server Component (page.tsx) which fetches them
  * via getPilots() — mock today, WordPress REST endpoint later.
@@ -24,6 +25,7 @@ export function MapApp({ pilots }: MapAppProps) {
   const [query, setQuery] = useState("");
   const [memberType, setMemberType] = useState<MemberTypeId>("all");
   const [activeSpecs, setActiveSpecs] = useState<SpecialtyId[]>([]);
+  const [selected, setSelected] = useState<PilotProfile | null>(null);
 
   const toggleSpec = (id: SpecialtyId) =>
     setActiveSpecs((prev) =>
@@ -63,13 +65,13 @@ export function MapApp({ pilots }: MapAppProps) {
         locale={locale}
         onLocaleChange={setLocale}
         onRegister={() => {
-          // TODO: wire the real RegisterModal when ported
           alert(locale === "fr" ? "Inscription à venir" : "Register flow coming");
         }}
         onHome={() => {
           setQuery("");
           setMemberType("all");
           setActiveSpecs([]);
+          setSelected(null);
         }}
       />
 
@@ -85,41 +87,40 @@ export function MapApp({ pilots }: MapAppProps) {
         count={filtered.length}
       />
 
-      <main className="relative flex-1 overflow-hidden">
-        <div className="flex h-full items-center justify-center px-6">
-          <div className="max-w-md text-center">
-            <p className="eyebrow mb-3">
-              {filtered.length}{" "}
-              {locale === "fr" ? "résultats filtrés" : "filtered results"}
-            </p>
-            <h2 className="mb-4 text-2xl">
-              {locale === "fr"
-                ? "Filtres branchés"
-                : "Filters wired up"}
-            </h2>
-            <p
-              className="text-base leading-relaxed"
-              style={{ color: "var(--fg2)" }}
-            >
-              {locale === "fr"
-                ? "Joue avec les chips et les onglets : le compteur réagit en direct. Les cartes de résultats et la carte Leaflet arrivent dans la prochaine session."
-                : "Play with the chips and tabs — the count reacts live. The result cards and Leaflet map land next session."}
-            </p>
-            <div className="mt-6 flex flex-wrap justify-center gap-2 text-sm" style={{ color: "var(--fg3)" }}>
-              {filtered.slice(0, 5).map((p) => (
-                <span
-                  key={p.id}
-                  className="rounded-full border px-3 py-1 font-[family-name:var(--font-display)] text-[11px] uppercase tracking-[.06em]"
-                  style={{ borderColor: "var(--border)" }}
-                >
-                  {p.name}
-                </span>
-              ))}
-              {filtered.length > 5 && (
-                <span className="font-[family-name:var(--font-mono)] text-[11px]">
-                  +{filtered.length - 5}
-                </span>
-              )}
+      {/* Main area — 40% result list / 60% map (locked layout) */}
+      <main className="relative flex flex-1 overflow-hidden">
+        <div
+          className="flex flex-col"
+          style={{
+            flex: "2 1 0",
+            minWidth: 0,
+            borderRight: "1px solid var(--border)",
+          }}
+        >
+          <ResultList
+            pilots={filtered}
+            activeId={selected?.id ?? null}
+            onSelect={setSelected}
+            locale={locale}
+          />
+        </div>
+
+        <div
+          className="relative flex"
+          style={{
+            flex: "3 1 0",
+            minWidth: 0,
+            background: "var(--color-onyx)",
+          }}
+        >
+          <div className="flex w-full items-center justify-center">
+            <div className="text-center" style={{ color: "#787a85" }}>
+              <p className="mb-2 font-[family-name:var(--font-display)] text-[11px] uppercase tracking-[.22em]">
+                {locale === "fr" ? "Carte" : "Map"}
+              </p>
+              <p className="font-[family-name:var(--font-mono)] text-xs uppercase tracking-widest">
+                Leaflet · prochaine session
+              </p>
             </div>
           </div>
         </div>
