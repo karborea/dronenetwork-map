@@ -160,8 +160,14 @@ h2, .h2 {
   justify-content: center;
 }
 .dn-pin-body img {
+  /* Tailwind preflight neutralises the HTML width/height attrs, so the SVG
+     would render at its intrinsic size. Force it back to 20x20 in CSS. */
+  width: 20px !important;
+  height: 20px !important;
+  max-width: none !important;
   transform: rotate(45deg);
   display: block;
+  flex-shrink: 0;
 }
 
 /* Cluster pill */
