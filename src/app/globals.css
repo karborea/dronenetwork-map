@@ -1,0 +1,91 @@
+@import "tailwindcss";
+
+/* ============================================================
+   DRONE NETWORK — Design tokens
+   Source of truth: design-system/colors_and_type.css
+   ============================================================ */
+
+@theme {
+  /* Brand palette — the 9 official colours + derived tints */
+  --color-iris: #7B5BF0;
+  --color-iris-700: #5B3FD4;
+  --color-iris-100: #EAE4FC;
+  --color-onyx: #0A0B0E;
+  --color-ink: #111216;
+  --color-graphite: #2C2E33;
+  --color-paper: #F1EFEA;
+  --color-mist: #E7E5E0;
+  --color-lavender: #CBBCF2;
+  --color-lime: #D6F58A;
+  --color-lime-700: #B8E25A;
+  --color-sap: #A8D24A;
+  --color-sap-700: #8FB733;
+
+  /* Type families — wired to next/font/local CSS variables */
+  --font-display: var(--font-chakra), "Arial Narrow", system-ui, sans-serif;
+  --font-body: var(--font-aeonik), system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: var(--font-chakra), ui-monospace, "SF Mono", monospace;
+
+  /* Radii */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-pill: 9999px;
+
+  /* Shadows — neutral, never purple-tinted except --shadow-pin */
+  --shadow-sm: 0 1px 2px rgba(10, 11, 14, 0.06);
+  --shadow-md: 0 4px 16px rgba(10, 11, 14, 0.08);
+  --shadow-lg: 0 16px 48px rgba(10, 11, 14, 0.12);
+  --shadow-pin: 0 6px 20px rgba(91, 63, 212, 0.35);
+}
+
+:root {
+  /* Semantic tokens — light surface defaults */
+  --surface: #ffffff;
+  --border: #d8d5ce;
+  --border-strong: #c2bfb7;
+  --fg1: #111216;
+  --fg2: #4a4c54;
+  --fg3: #797b83;
+}
+
+html,
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Type defaults — match design-system */
+h1, .h1 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  line-height: 0.98;
+}
+
+h2, .h2 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.005em;
+  text-transform: uppercase;
+  line-height: 1.02;
+}
+
+.eyebrow {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--fg3);
+}
