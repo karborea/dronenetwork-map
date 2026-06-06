@@ -10,6 +10,13 @@ interface NavItem {
   href: string;
 }
 
+/**
+ * NAV_ITEMS is the top-nav source of truth for the map app.
+ *
+ * IMPORTANT — this list will be revised once the WordPress sitemap is final.
+ * Bricks Builder will render the same nav on the WP side; both must match.
+ * Update both places when the sitemap lands.
+ */
 const NAV_ITEMS: NavItem[] = [
   { fr: "La carte", en: "The map", href: "/" },
   { fr: "Spécialités", en: "Specialties", href: "#" },
