@@ -31,7 +31,7 @@ export function ResultList({ pilots, activeId, onSelect, locale }: ResultListPro
 
   return (
     <div
-      className="flex-1 overflow-y-auto px-5 pb-8 pt-5"
+      className="scrollbar-hidden flex-1 overflow-y-auto px-5 pb-8 pt-5"
       style={{ background: "var(--color-paper)" }}
     >
       <div className="grid grid-cols-2 gap-x-4 gap-y-6">

@@ -89,3 +89,15 @@ h2, .h2 {
   text-transform: uppercase;
   color: var(--fg3);
 }
+
+/* Hide native scrollbar but keep scrollability — used on the result list
+   and any other scroll container where the bar would clutter the UI. */
+.scrollbar-hidden {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* legacy Edge / IE */
+}
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none; /* Chromium, Safari */
+  width: 0;
+  height: 0;
+}
