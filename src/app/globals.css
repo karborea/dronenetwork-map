@@ -93,11 +93,17 @@ h2, .h2 {
 /* Hide native scrollbar but keep scrollability — used on the result list
    and any other scroll container where the bar would clutter the UI. */
 .scrollbar-hidden {
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* legacy Edge / IE */
+  scrollbar-width: none !important; /* Firefox */
+  -ms-overflow-style: none !important; /* legacy Edge / IE */
 }
-.scrollbar-hidden::-webkit-scrollbar {
-  display: none; /* Chromium, Safari */
-  width: 0;
-  height: 0;
+.scrollbar-hidden::-webkit-scrollbar,
+.scrollbar-hidden::-webkit-scrollbar-track,
+.scrollbar-hidden::-webkit-scrollbar-thumb,
+.scrollbar-hidden::-webkit-scrollbar-corner {
+  display: none !important; /* Chromium, Safari, Edge */
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
 }
