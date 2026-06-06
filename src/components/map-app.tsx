@@ -29,6 +29,7 @@ export function MapApp({ pilots }: MapAppProps) {
     setActiveSpecs((prev) =>
       prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
     );
+  const clearSpecs = () => setActiveSpecs([]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toUpperCase();
@@ -80,6 +81,7 @@ export function MapApp({ pilots }: MapAppProps) {
         onMemberTypeChange={setMemberType}
         activeSpecs={activeSpecs}
         onToggleSpec={toggleSpec}
+        onClearSpecs={clearSpecs}
         count={filtered.length}
       />
 
