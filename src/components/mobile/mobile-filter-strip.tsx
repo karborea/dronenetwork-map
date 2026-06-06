@@ -1,6 +1,5 @@
 "use client";
 
-import { Icon } from "../icon";
 import { TextInput } from "../ui/text-input";
 import { DN_MEMBER_TYPES, DN_SPECIALTIES, type MemberTypeId } from "@/lib/taxonomies";
 import type { Locale } from "@/lib/i18n";
@@ -37,24 +36,14 @@ export function MobileFilterStrip({
       className="relative z-40 flex-shrink-0 bg-white"
       style={{ borderBottom: "1px solid var(--border)" }}
     >
-      {/* Search row */}
-      <div className="flex gap-2 px-3.5 pt-2.5 pb-2">
-        <div className="flex-1">
-          <TextInput
-            value={query}
-            onChange={onQueryChange}
-            icon="search"
-            placeholder={t("Code postal — ex. G7K 1H3", "Postal code — e.g. G7K 1H3")}
-          />
-        </div>
-        <button
-          type="button"
-          aria-label={t("Filtres", "Filters")}
-          className="flex h-11 w-11 flex-shrink-0 cursor-pointer items-center justify-center rounded-md bg-white"
-          style={{ border: "1px solid var(--border-strong)" }}
-        >
-          <Icon name="filter" size={18} stroke="var(--color-ink)" />
-        </button>
+      {/* Search row — filter button removed for MVP since chips are inline below */}
+      <div className="px-3.5 pt-2.5 pb-2">
+        <TextInput
+          value={query}
+          onChange={onQueryChange}
+          icon="search"
+          placeholder={t("Code postal — ex. G7K 1H3", "Postal code — e.g. G7K 1H3")}
+        />
       </div>
 
       {/* Chip row — horizontal scroll */}
