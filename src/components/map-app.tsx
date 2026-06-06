@@ -6,6 +6,10 @@ import { Header } from "./header";
 import { FilterBar } from "./filter-bar";
 import { ResultList } from "./result-list";
 import { ProfilePanel } from "./profile-panel";
+import { MobileHeader } from "./mobile/mobile-header";
+import { MobileFilterStrip } from "./mobile/mobile-filter-strip";
+import { MobileBottomSheet } from "./mobile/mobile-bottom-sheet";
+import { useIsMobile } from "@/lib/use-is-mobile";
 import type { Locale } from "@/lib/i18n";
 import type { MemberTypeId } from "@/lib/taxonomies";
 import type { PilotProfile, SpecialtyId } from "@/types/pilot";
@@ -22,42 +26,59 @@ interface MapAppProps {
 }
 
 /**
- * Root client wrapper for the map experience. Holds the shared interactive
- * state (locale, filters, selected pilot) and lays out Header · FilterBar ·
- * (ResultList | MapCanvas) · ProfilePanel.
- *
- * Pilots come from the parent Server Component (page.tsx) which fetches them
- * via getPilots() — mock today, WordPress REST endpoint later.
+ * Root client wrapper. Holds shared interactive state (locale, filters,
+ * selected pilot, sheet expansion) and renders either the desktop layout
+ * (Header · FilterBar · 40/60 split) or the mobile layout (compact Header ·
+ * filter strip · full-bleed map · bottom sheet) depending on viewport width.
  */
 export function MapApp({ pilots }: MapAppProps) {
+  const isMobile = useIsMobile();
+
   const [locale, setLocale] = useState<Locale>("fr");
   const [query, setQuery] = useState("");
   const [memberType, setMemberType] = useState<MemberTypeId>("all");
   const [activeSpecs, setActiveSpecs] = useState<SpecialtyId[]>([]);
   const [selected, setSelected] = useState<PilotProfile | null>(null);
+  const [sheetExpanded, setSheetExpanded] = useState(false);
 
   const toggleSpec = (id: SpecialtyId) =>
     setActiveSpecs((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
     );
   const clearSpecs = () => setActiveSpecs([]);
+
+  // Selecting a pilot collapses the mobile bottom sheet so the profile takes over
+  const handleSelect = (pilot: PilotProfile) => {
+    setSelected(pilot);
+    setSheetExpanded(false);
+  };
+
+  const handleHome = () => {
+    setQuery("");
+    setMemberType("all");
+    setActiveSpecs([]);
+    setSelected(null);
+    setSheetExpanded(false);
+  };
+
+  const handleRegister = () => {
+    // TODO: wire the real RegisterModal when ported
+    alert(locale === "fr" ? "Inscription à venir" : "Register flow coming");
+  };
 
   const filtered = useMemo(() => {
     const q = query.trim().toUpperCase();
     return pilots.filter((p) => {
-      // Member-type filter
       if (memberType === "recreatif" && !(p.kind === "pilot" && !p.pro)) return false;
       if (memberType === "pro" && !(p.kind === "pilot" && p.pro)) return false;
       if (memberType === "shop" && p.kind !== "shop") return false;
       if (memberType === "school" && p.kind !== "school") return false;
 
-      // Specialty filter (only applies if at least one is selected)
       if (activeSpecs.length > 0) {
         const pilotSpecs = p.specs ?? [];
         if (!activeSpecs.some((s) => pilotSpecs.includes(s))) return false;
       }
 
-      // Postal-code / city query
       if (q.length > 0) {
         const postalMatch = p.postal.toUpperCase().startsWith(q.slice(0, 3));
         const cityMatch = p.city.toUpperCase().includes(q);
@@ -68,20 +89,65 @@ export function MapApp({ pilots }: MapAppProps) {
     });
   }, [pilots, memberType, activeSpecs, query]);
 
+  // ---- Mobile layout ----
+  if (isMobile) {
+    return (
+      <div className="flex h-screen flex-col overflow-hidden">
+        <MobileHeader
+          locale={locale}
+          onLocaleChange={setLocale}
+          onRegister={handleRegister}
+          onHome={handleHome}
+        />
+
+        <MobileFilterStrip
+          locale={locale}
+          query={query}
+          onQueryChange={setQuery}
+          memberType={memberType}
+          onMemberTypeChange={setMemberType}
+          activeSpecs={activeSpecs}
+          onToggleSpec={toggleSpec}
+        />
+
+        <main className="relative flex flex-1 overflow-hidden">
+          <MapCanvas
+            pilots={filtered}
+            activeId={selected?.id ?? null}
+            onSelect={handleSelect}
+            locale={locale}
+          />
+          <MobileBottomSheet
+            pilots={filtered}
+            activeId={selected?.id ?? null}
+            onSelect={handleSelect}
+            locale={locale}
+            expanded={sheetExpanded}
+            onExpandedChange={setSheetExpanded}
+          />
+        </main>
+
+        {selected && (
+          <ProfilePanel
+            key={selected.id}
+            pilot={selected}
+            locale={locale}
+            onClose={() => setSelected(null)}
+            mobile
+          />
+        )}
+      </div>
+    );
+  }
+
+  // ---- Desktop layout ----
   return (
     <div className="flex h-screen flex-col">
       <Header
         locale={locale}
         onLocaleChange={setLocale}
-        onRegister={() => {
-          alert(locale === "fr" ? "Inscription à venir" : "Register flow coming");
-        }}
-        onHome={() => {
-          setQuery("");
-          setMemberType("all");
-          setActiveSpecs([]);
-          setSelected(null);
-        }}
+        onRegister={handleRegister}
+        onHome={handleHome}
       />
 
       <FilterBar
@@ -96,7 +162,6 @@ export function MapApp({ pilots }: MapAppProps) {
         count={filtered.length}
       />
 
-      {/* Main area — 40% result list / 60% map (locked layout) */}
       <main className="relative flex flex-1 overflow-hidden">
         <div
           className="flex flex-col"
@@ -109,7 +174,7 @@ export function MapApp({ pilots }: MapAppProps) {
           <ResultList
             pilots={filtered}
             activeId={selected?.id ?? null}
-            onSelect={setSelected}
+            onSelect={handleSelect}
             locale={locale}
           />
         </div>
@@ -125,7 +190,7 @@ export function MapApp({ pilots }: MapAppProps) {
           <MapCanvas
             pilots={filtered}
             activeId={selected?.id ?? null}
-            onSelect={setSelected}
+            onSelect={handleSelect}
             locale={locale}
           />
           {selected && (
