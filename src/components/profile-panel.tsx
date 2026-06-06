@@ -279,6 +279,7 @@ export function ProfilePanel({
               backgroundSize: "contain",
               backgroundPosition: "center",
               backgroundRepeat: "no-repeat",
+              pointerEvents: "none",
             }}
           />
           {/* Avatar tile */}
