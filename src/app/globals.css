@@ -90,6 +90,116 @@ h2, .h2 {
   color: var(--fg3);
 }
 
+/* ============================================================
+   LEAFLET — brand-tinted map controls and custom pin styles.
+   Used by src/components/map-canvas.tsx.
+   ============================================================ */
+
+.leaflet-container {
+  background: var(--color-onyx) !important;
+  font-family: var(--font-body);
+}
+
+.leaflet-control-attribution {
+  background: rgba(10, 11, 14, 0.7) !important;
+  color: #aaa !important;
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+.leaflet-control-attribution a {
+  color: var(--color-lavender) !important;
+}
+.leaflet-control-zoom a {
+  background: var(--color-onyx) !important;
+  color: var(--color-paper) !important;
+  border-color: var(--border-strong) !important;
+}
+.leaflet-control-zoom a:hover {
+  background: var(--color-graphite) !important;
+}
+
+/* Brand teardrop pin */
+.dn-pin-icon {
+  background: transparent !important;
+  border: none !important;
+}
+.dn-pin-wrap {
+  position: relative;
+  width: 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.16s ease;
+}
+.dn-pin-wrap:hover,
+.dn-pin-wrap.is-active {
+  transform: translateY(-2px) scale(1.06);
+}
+.dn-pin-ribbon {
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-ink);
+  background: var(--color-lime);
+  padding: 3px 9px;
+  border-radius: var(--radius-pill);
+  white-space: nowrap;
+  box-shadow: 0 2px 6px rgba(10, 11, 14, 0.4);
+  margin-bottom: 4px;
+}
+.dn-pin-body {
+  width: 42px;
+  height: 42px;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  box-shadow: var(--shadow-pin), 0 4px 12px rgba(10, 11, 14, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.dn-pin-body img {
+  transform: rotate(45deg);
+  display: block;
+}
+
+/* Cluster pill */
+.dn-cluster-icon {
+  background: transparent !important;
+  border: none !important;
+}
+.dn-cluster-pill {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 8px 14px;
+  background: var(--color-onyx);
+  border: 2px solid var(--color-iris);
+  border-radius: var(--radius-pill);
+  box-shadow: 0 4px 12px rgba(10, 11, 14, 0.5);
+  transition: transform 0.15s ease;
+  white-space: nowrap;
+}
+.dn-cluster-pill:hover {
+  transform: scale(1.05);
+}
+.dn-cluster-count {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--color-lime);
+  line-height: 1;
+}
+.dn-cluster-label {
+  font-family: var(--font-display);
+  font-size: 9.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-paper);
+  line-height: 1;
+}
+
 /* Hide native scrollbar but keep scrollability — used on the result list
    and any other scroll container where the bar would clutter the UI. */
 .scrollbar-hidden {

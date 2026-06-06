@@ -1,12 +1,20 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import dynamic from "next/dynamic";
 import { Header } from "./header";
 import { FilterBar } from "./filter-bar";
 import { ResultList } from "./result-list";
 import type { Locale } from "@/lib/i18n";
 import type { MemberTypeId } from "@/lib/taxonomies";
 import type { PilotProfile, SpecialtyId } from "@/types/pilot";
+
+// Leaflet hits window/document at module load, so dynamically import the
+// MapCanvas on the client only.
+const MapCanvas = dynamic(
+  () => import("./map-canvas").then((m) => m.MapCanvas),
+  { ssr: false }
+);
 
 interface MapAppProps {
   pilots: PilotProfile[];
@@ -106,23 +114,19 @@ export function MapApp({ pilots }: MapAppProps) {
         </div>
 
         <div
-          className="relative flex"
+          className="relative"
           style={{
             flex: "3 1 0",
             minWidth: 0,
             background: "var(--color-onyx)",
           }}
         >
-          <div className="flex w-full items-center justify-center">
-            <div className="text-center" style={{ color: "#787a85" }}>
-              <p className="mb-2 font-[family-name:var(--font-display)] text-[11px] uppercase tracking-[.22em]">
-                {locale === "fr" ? "Carte" : "Map"}
-              </p>
-              <p className="font-[family-name:var(--font-mono)] text-xs uppercase tracking-widest">
-                Leaflet · prochaine session
-              </p>
-            </div>
-          </div>
+          <MapCanvas
+            pilots={filtered}
+            activeId={selected?.id ?? null}
+            onSelect={setSelected}
+            locale={locale}
+          />
         </div>
       </main>
     </div>
