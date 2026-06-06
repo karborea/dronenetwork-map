@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { Icon } from "./icon";
 import { Chip } from "./ui/chip";
 import { TextInput } from "./ui/text-input";
@@ -38,15 +39,44 @@ export function FilterBar({
 }: FilterBarProps) {
   const t = (fr: string, en: string) => (locale === "fr" ? fr : en);
   const [specsOpen, setSpecsOpen] = useState(false);
-  const popoverRef = useRef<HTMLDivElement>(null);
+  const [popoverPos, setPopoverPos] = useState<{ top: number; left: number } | null>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  // Recompute popover position on open + on resize. position: fixed escapes
+  // any containing block / overflow:hidden / z-index conflict from ancestors.
+  useLayoutEffect(() => {
+    if (!specsOpen || !buttonRef.current) return;
+    const recompute = () => {
+      if (!buttonRef.current) return;
+      const rect = buttonRef.current.getBoundingClientRect();
+      const PANEL_WIDTH = 520;
+      const margin = 12;
+      // Anchor under the button; clamp into the viewport
+      let left = rect.left;
+      if (left + PANEL_WIDTH > window.innerWidth - margin) {
+        left = window.innerWidth - PANEL_WIDTH - margin;
+      }
+      if (left < margin) left = margin;
+      setPopoverPos({ top: rect.bottom + 10, left });
+    };
+    recompute();
+    window.addEventListener("resize", recompute);
+    window.addEventListener("scroll", recompute, true);
+    return () => {
+      window.removeEventListener("resize", recompute);
+      window.removeEventListener("scroll", recompute, true);
+    };
+  }, [specsOpen]);
 
   // Close popover on outside click or Escape
   useEffect(() => {
     if (!specsOpen) return;
     const onDocClick = (e: MouseEvent) => {
-      if (popoverRef.current && !popoverRef.current.contains(e.target as Node)) {
-        setSpecsOpen(false);
-      }
+      const target = e.target as Node;
+      const insideButton = buttonRef.current?.contains(target);
+      const insidePanel = panelRef.current?.contains(target);
+      if (!insideButton && !insidePanel) setSpecsOpen(false);
     };
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") setSpecsOpen(false);
@@ -97,9 +127,10 @@ export function FilterBar({
           })}
         </div>
 
-        {/* Specialties button + popover */}
-        <div className="relative flex-shrink-0" ref={popoverRef}>
+        {/* Specialties button + popover (rendered via portal below) */}
+        <div className="flex-shrink-0">
           <button
+            ref={buttonRef}
             type="button"
             onClick={() => setSpecsOpen((v) => !v)}
             aria-expanded={specsOpen}
@@ -132,12 +163,26 @@ export function FilterBar({
             />
           </button>
 
-          {specsOpen && (
+        </div>
+
+        {/* Popover via portal — escapes parent containing blocks + z-index conflicts */}
+        {specsOpen && popoverPos && typeof document !== "undefined" &&
+          createPortal(
             <div
+              ref={panelRef}
               role="dialog"
               aria-label={t("Filtrer par spécialités", "Filter by specialties")}
-              className="absolute left-0 top-[calc(100%+10px)] z-50 w-[520px] rounded-xl bg-white p-5 shadow-lg"
-              style={{ border: "1px solid var(--border)", boxShadow: "var(--shadow-lg)" }}
+              className="rounded-xl bg-white p-5"
+              style={{
+                position: "fixed",
+                top: popoverPos.top,
+                left: popoverPos.left,
+                width: 520,
+                maxWidth: "calc(100vw - 24px)",
+                zIndex: 9999,
+                border: "1px solid var(--border)",
+                boxShadow: "var(--shadow-lg)",
+              }}
             >
               <div className="mb-4 flex items-center justify-between">
                 <span className="eyebrow">
@@ -167,9 +212,9 @@ export function FilterBar({
                   </Chip>
                 ))}
               </div>
-            </div>
+            </div>,
+            document.body,
           )}
-        </div>
 
         <div className="flex-1" />
 
