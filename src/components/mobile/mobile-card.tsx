@@ -4,9 +4,9 @@ import { useState } from "react";
 import { Icon } from "../icon";
 import {
   DN_FORMATIONS,
-  DN_KIND_LABEL,
   DN_SERVICES,
   DN_SPECIALTIES,
+  getKindLabel,
 } from "@/lib/taxonomies";
 import type { Locale } from "@/lib/i18n";
 import type { PilotProfile } from "@/types/pilot";
@@ -32,7 +32,7 @@ export function MobileCard({
   compact = false,
 }: MobileCardProps) {
   const [fav, setFav] = useState(false);
-  const k = DN_KIND_LABEL[pilot.kind];
+  const k = getKindLabel(pilot.kind);
   const isPro = !!pilot.pro;
   const t = (fr: string, en: string) => (locale === "fr" ? fr : en);
 

@@ -4,11 +4,11 @@ import { useState, type ReactNode } from "react";
 import { Icon, type IconName } from "./icon";
 import {
   DN_FORMATIONS,
-  DN_KIND_LABEL,
   DN_LIVRABLES,
   DN_PAYLOADS,
   DN_SERVICES,
   DN_SPECIALTIES,
+  getKindLabel,
 } from "@/lib/taxonomies";
 import type { Locale } from "@/lib/i18n";
 import type { LicenceType, PilotProfile } from "@/types/pilot";
@@ -197,7 +197,7 @@ export function ProfilePanel({
     setTimeout(onClose, PANEL_EXIT_MS + 20);
   };
 
-  const k = DN_KIND_LABEL[pilot.kind];
+  const k = getKindLabel(pilot.kind);
   const isPro = !!pilot.pro;
 
   const lookup = <T extends string>(

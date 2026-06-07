@@ -92,3 +92,15 @@ export const DN_KIND_LABEL = {
   shop:   { fr: "Boutique", en: "Shop",   icon: "building" },
   school: { fr: "École",    en: "School", icon: "graduation" },
 } as const;
+
+/**
+ * Safe lookup that falls back to "pilot" labels if the API returned an
+ * unexpected kind value (e.g. label stored instead of slug from a
+ * misconfigured Profile Builder field). Prevents render crashes.
+ */
+export function getKindLabel(kind: string | undefined): typeof DN_KIND_LABEL.pilot {
+  if (kind && kind in DN_KIND_LABEL) {
+    return DN_KIND_LABEL[kind as keyof typeof DN_KIND_LABEL];
+  }
+  return DN_KIND_LABEL.pilot;
+}
