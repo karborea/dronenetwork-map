@@ -98,7 +98,13 @@ export const DN_KIND_LABEL = {
  * unexpected kind value (e.g. label stored instead of slug from a
  * misconfigured Profile Builder field). Prevents render crashes.
  */
-export function getKindLabel(kind: string | undefined): typeof DN_KIND_LABEL.pilot {
+export interface KindLabel {
+  fr: string;
+  en: string;
+  icon: string;
+}
+
+export function getKindLabel(kind: string | undefined): KindLabel {
   if (kind && kind in DN_KIND_LABEL) {
     return DN_KIND_LABEL[kind as keyof typeof DN_KIND_LABEL];
   }
