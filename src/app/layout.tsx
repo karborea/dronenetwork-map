@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import Script from "next/script";
 import "./globals.css";
 
 const chakraPetch = localFont({
@@ -40,7 +41,14 @@ export default function RootLayout({
       lang="fr"
       className={`${chakraPetch.variable} ${aeonikPro.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {children}
+        {/* BugHerd — visual feedback / QA overlay for stakeholders */}
+        <Script
+          src="https://www.bugherd.com/sidebarv2.js?apikey=kbm6py72wx0hhqv9hvu3cw"
+          strategy="lazyOnload"
+        />
+      </body>
     </html>
   );
 }
