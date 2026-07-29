@@ -342,10 +342,11 @@ export async function getPilots(): Promise<PilotProfile[]> {
   }
 
   try {
-    const res = await fetch(`${wpUrl}/wp-json/dn/v1/pilots`, {
-      // Always fetch live: during the seeding phase newly approved members
-      // must appear on the map immediately. Low traffic makes per-request
-      // fetching cheap, and it avoids stale Data Cache holding an old list.
+    // Always fetch live: during the seeding phase newly approved members must
+    // appear on the map immediately. Low traffic makes per-request fetching
+    // cheap. The `_ts` query param makes every request URL unique so no CDN or
+    // edge layer between Vercel and WordPress can serve a stale cached list.
+    const res = await fetch(`${wpUrl}/wp-json/dn/v1/pilots?_ts=${Date.now()}`, {
       cache: "no-store",
       headers: { Accept: "application/json" },
     });
