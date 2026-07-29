@@ -331,7 +331,7 @@ const MOCK_PILOTS: PilotProfile[] = [
 
 /**
  * Returns every approved + active pilot for the map.
- * - Production: fetch from WP REST endpoint, ISR-cached for 60s
+ * - Production: fetch from WP REST endpoint, live per request (no-store)
  * - Dev (no env var) or WP failure: fall back to mock
  */
 export async function getPilots(): Promise<PilotProfile[]> {
@@ -343,7 +343,10 @@ export async function getPilots(): Promise<PilotProfile[]> {
 
   try {
     const res = await fetch(`${wpUrl}/wp-json/dn/v1/pilots`, {
-      next: { revalidate: 60 },
+      // Always fetch live: during the seeding phase newly approved members
+      // must appear on the map immediately. Low traffic makes per-request
+      // fetching cheap, and it avoids stale Data Cache holding an old list.
+      cache: "no-store",
       headers: { Accept: "application/json" },
     });
 
