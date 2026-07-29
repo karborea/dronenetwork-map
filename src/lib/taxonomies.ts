@@ -38,6 +38,8 @@ export const DN_SPECIALTIES: TaxonomyEntry<SpecialtyId>[] = [
   { id: "lavage",         fr: "Lavage industriel",              en: "Industrial cleaning" },
   { id: "photo-video",    fr: "Photo / Vidéo / Marketing",      en: "Photo / Video / Marketing" },
   { id: "securite",       fr: "Sécurité et urgence",            en: "Safety & emergency" },
+  { id: "droneshow",      fr: "Droneshow",                      en: "Drone show" },
+  { id: "fpv",            fr: "FPV (first person view)",        en: "FPV (first person view)" },
   { id: "autres",         fr: "Autres",                         en: "Other" },
 ];
 

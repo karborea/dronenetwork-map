@@ -30,6 +30,8 @@ export type SpecialtyId =
   | "lavage"
   | "photo-video"
   | "securite"
+  | "droneshow"
+  | "fpv"
   | "autres";
 
 export type DeliverableId =
