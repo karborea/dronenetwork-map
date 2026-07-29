@@ -72,6 +72,12 @@ export function MapApp({ pilots }: MapAppProps) {
   const filtered = useMemo(() => {
     const q = query.trim().toUpperCase();
     return pilots.filter((p) => {
+      // Skip members without real coordinates: a profile with no address
+      // geocodes to (0,0), which would drop a stray pin off Africa and blow
+      // out the map's auto-fit bounds. No coordinates means not on the map.
+      if (!Number.isFinite(p.lat) || !Number.isFinite(p.lng)) return false;
+      if (p.lat === 0 && p.lng === 0) return false;
+
       if (memberType === "recreatif" && !(p.kind === "pilot" && !p.pro)) return false;
       if (memberType === "pro" && !(p.kind === "pilot" && p.pro)) return false;
       if (memberType === "shop" && p.kind !== "shop") return false;
