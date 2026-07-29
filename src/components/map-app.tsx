@@ -10,7 +10,9 @@ import { MobileHeader } from "./mobile/mobile-header";
 import { MobileFilterStrip } from "./mobile/mobile-filter-strip";
 import { MobileFilterSheet } from "./mobile/mobile-filter-sheet";
 import { MobileBottomSheet } from "./mobile/mobile-bottom-sheet";
+import { NavMenu } from "./nav-menu";
 import { useIsMobile } from "@/lib/use-is-mobile";
+import { useAuth } from "@/lib/use-auth";
 import type { Locale } from "@/lib/i18n";
 import type { MemberTypeId } from "@/lib/taxonomies";
 import type { PilotProfile, SpecialtyId } from "@/types/pilot";
@@ -34,8 +36,10 @@ interface MapAppProps {
  */
 export function MapApp({ pilots }: MapAppProps) {
   const isMobile = useIsMobile();
+  const auth = useAuth();
 
   const [locale, setLocale] = useState<Locale>("fr");
+  const [menuOpen, setMenuOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [memberType, setMemberType] = useState<MemberTypeId>("all");
   const [activeSpecs, setActiveSpecs] = useState<SpecialtyId[]>([]);
@@ -62,11 +66,7 @@ export function MapApp({ pilots }: MapAppProps) {
     setSelected(null);
     setSheetExpanded(false);
     setSpecsSheetOpen(false);
-  };
-
-  const handleRegister = () => {
-    // TODO: wire the real RegisterModal when ported
-    alert(locale === "fr" ? "Inscription à venir" : "Register flow coming");
+    setMenuOpen(false);
   };
 
   const filtered = useMemo(() => {
@@ -105,8 +105,16 @@ export function MapApp({ pilots }: MapAppProps) {
         <MobileHeader
           locale={locale}
           onLocaleChange={setLocale}
-          onRegister={handleRegister}
           onHome={handleHome}
+          onOpenMenu={() => setMenuOpen(true)}
+        />
+
+        <NavMenu
+          open={menuOpen}
+          onClose={() => setMenuOpen(false)}
+          locale={locale}
+          onLocaleChange={setLocale}
+          auth={auth}
         />
 
         <MobileFilterStrip
@@ -165,8 +173,17 @@ export function MapApp({ pilots }: MapAppProps) {
       <Header
         locale={locale}
         onLocaleChange={setLocale}
-        onRegister={handleRegister}
         onHome={handleHome}
+        onOpenMenu={() => setMenuOpen(true)}
+        auth={auth}
+      />
+
+      <NavMenu
+        open={menuOpen}
+        onClose={() => setMenuOpen(false)}
+        locale={locale}
+        onLocaleChange={setLocale}
+        auth={auth}
       />
 
       <FilterBar

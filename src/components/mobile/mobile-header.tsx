@@ -7,19 +7,19 @@ import type { Locale } from "@/lib/i18n";
 interface MobileHeaderProps {
   locale: Locale;
   onLocaleChange: (locale: Locale) => void;
-  onRegister: () => void;
   onHome: () => void;
+  onOpenMenu: () => void;
 }
 
 /**
- * Compact mobile header (60px) — wordmark · FR/EN switch · S'inscrire.
- * No inline nav; nav lives on the WP marketing pages.
+ * Compact mobile header (60px) — wordmark · FR/EN switch · hamburger.
+ * The login-aware CTAs and nav links live in the slide-over menu (NavMenu).
  */
 export function MobileHeader({
   locale,
   onLocaleChange,
-  onRegister,
   onHome,
+  onOpenMenu,
 }: MobileHeaderProps) {
   return (
     <header className="relative z-50 flex h-[60px] flex-shrink-0 items-center justify-between border-b border-[#1c1d22] bg-onyx px-4">
@@ -63,10 +63,13 @@ export function MobileHeader({
 
         <button
           type="button"
-          onClick={onRegister}
-          className="cursor-pointer rounded-full bg-lime px-[13px] py-[7px] font-[family-name:var(--font-display)] text-[11px] font-semibold uppercase tracking-[.04em] text-ink transition-colors hover:bg-lime-700"
+          onClick={onOpenMenu}
+          aria-label={locale === "fr" ? "Menu" : "Menu"}
+          className="flex h-[38px] w-[38px] cursor-pointer flex-col items-center justify-center gap-[5px] rounded-full border border-[#34363c] bg-transparent"
         >
-          {locale === "fr" ? "S'inscrire" : "Register"}
+          <span className="h-[2px] w-4 bg-paper" />
+          <span className="h-[2px] w-4 bg-paper" />
+          <span className="h-[2px] w-4 bg-paper" />
         </button>
       </div>
     </header>
