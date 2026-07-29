@@ -37,7 +37,7 @@ export function NavMenu({ open, onClose, locale, onLocaleChange, auth }: NavMenu
       <div
         onClick={onClose}
         aria-hidden={!open}
-        className={`fixed inset-0 z-[60] bg-black/50 transition-opacity duration-300 ${
+        className={`fixed inset-0 z-[1200] bg-black/50 transition-opacity duration-300 ${
           open ? "opacity-100" : "pointer-events-none opacity-0"
         }`}
       />
@@ -46,7 +46,7 @@ export function NavMenu({ open, onClose, locale, onLocaleChange, auth }: NavMenu
         role="dialog"
         aria-modal="true"
         aria-hidden={!open}
-        className={`fixed inset-y-0 right-0 z-[70] flex w-[min(400px,88vw)] flex-col bg-onyx shadow-2xl transition-transform duration-300 ${
+        className={`fixed inset-y-0 right-0 z-[1300] flex w-[min(400px,88vw)] flex-col bg-onyx shadow-2xl transition-transform duration-300 ${
           open ? "translate-x-0" : "translate-x-full"
         }`}
       >
