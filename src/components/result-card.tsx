@@ -20,7 +20,7 @@ interface ResultCardProps {
 
 /**
  * Airbnb-style listing card. Cover image with gradient + symbol overlay,
- * "Verified Pro" or "Verified member" pill top-left, favourite heart
+ * "Verified Pro" or "Verified member" pill top-left
  * top-right, text block below (name · kind · city · taxonomy list).
  *
  * The card has no outer border — relies on whitespace between cards in the
@@ -29,7 +29,6 @@ interface ResultCardProps {
  */
 export function ResultCard({ pilot, active, onClick, locale }: ResultCardProps) {
   const [hover, setHover] = useState(false);
-  const [fav, setFav] = useState(false);
   const k = getKindLabel(pilot.kind);
   const isPro = !!pilot.pro;
   const t = (fr: string, en: string) => (locale === "fr" ? fr : en);
@@ -104,28 +103,6 @@ export function ResultCard({ pilot, active, onClick, locale }: ResultCardProps) 
           {isPro ? t("Pro vérifié", "Verified Pro") : t("Membre vérifié", "Verified member")}
         </div>
 
-        {/* Heart top-right */}
-        <button
-          type="button"
-          aria-label={t("Favori", "Favourite")}
-          aria-pressed={fav}
-          onClick={(e) => {
-            e.stopPropagation();
-            setFav((v) => !v);
-          }}
-          className="absolute right-2.5 top-2.5 flex h-8 w-8 cursor-pointer items-center justify-center border-none bg-transparent p-0"
-        >
-          <Icon
-            name="heart"
-            size={22}
-            stroke="#fff"
-            strokeWidth={2.2}
-            style={{
-              fill: fav ? "var(--color-iris)" : "rgba(10,11,14,0.45)",
-              transition: "fill .15s",
-            }}
-          />
-        </button>
       </div>
 
       {/* Text block */}

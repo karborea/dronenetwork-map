@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { Icon } from "../icon";
 import {
   DN_FORMATIONS,
@@ -31,7 +30,6 @@ export function MobileCard({
   locale,
   compact = false,
 }: MobileCardProps) {
-  const [fav, setFav] = useState(false);
   const k = getKindLabel(pilot.kind);
   const isPro = !!pilot.pro;
   const t = (fr: string, en: string) => (locale === "fr" ? fr : en);
@@ -103,27 +101,6 @@ export function MobileCard({
           {isPro ? t("Pro", "Pro") : t("Vérifié", "Verified")}
         </div>
 
-        <button
-          type="button"
-          aria-label={t("Favori", "Favourite")}
-          aria-pressed={fav}
-          onClick={(e) => {
-            e.stopPropagation();
-            setFav((v) => !v);
-          }}
-          className="absolute right-1.5 top-1.5 flex h-[30px] w-[30px] cursor-pointer items-center justify-center border-0 bg-transparent p-0"
-        >
-          <Icon
-            name="heart"
-            size={18}
-            stroke="#fff"
-            strokeWidth={2.2}
-            style={{
-              fill: fav ? "var(--color-iris)" : "rgba(10,11,14,0.45)",
-              transition: "fill .15s",
-            }}
-          />
-        </button>
       </div>
 
       <div className="flex flex-col gap-0.5 px-0.5">
