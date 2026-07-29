@@ -46,7 +46,7 @@ export function NavMenu({ open, onClose, locale, onLocaleChange, auth }: NavMenu
         role="dialog"
         aria-modal="true"
         aria-hidden={!open}
-        className={`fixed right-0 top-0 z-[70] flex h-full w-[min(400px,88vw)] flex-col bg-onyx shadow-2xl transition-transform duration-300 ${
+        className={`fixed inset-y-0 right-0 z-[70] flex w-[min(400px,88vw)] flex-col bg-onyx shadow-2xl transition-transform duration-300 ${
           open ? "translate-x-0" : "translate-x-full"
         }`}
       >
