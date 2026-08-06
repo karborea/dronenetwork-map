@@ -100,9 +100,16 @@ export interface PilotProfile {
   // Equipment (pilots only)
   drones?: string[];
 
-  // Contact (public)
+  // Contact
   email: string;
-  phone: string;
+  /**
+   * Whether the member has a phone on file. The number itself is never in the
+   * public list payload — it is fetched per-request from /api/reveal-phone,
+   * which also texts the member that someone asked for it.
+   */
+  has_phone?: boolean;
+  /** Only present in local mock data; production reveals go through the API. */
+  phone?: string;
 
   // Links
   site_web?: string | null;

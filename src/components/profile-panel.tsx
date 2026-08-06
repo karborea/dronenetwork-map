@@ -184,7 +184,10 @@ export function ProfilePanel({
 }: ProfilePanelProps) {
   const t = (fr: string, en: string) => (locale === "fr" ? fr : en);
   // State resets per-pilot via the `key` prop on the parent — see map-app.tsx
-  const [phoneRevealed, setPhoneRevealed] = useState(false);
+  const [phone, setPhone] = useState<string | null>(null);
+  const [revealState, setRevealState] = useState<
+    "idle" | "loading" | "error" | "rate-limited"
+  >("idle");
   const [smsToast, setSmsToast] = useState(false);
   const [exiting, setExiting] = useState(false);
 
@@ -215,10 +218,36 @@ export function ProfilePanel({
   const serviceNames = lookup(DN_SERVICES, pilot.services);
   const formationNames = lookup(DN_FORMATIONS, pilot.formations);
 
-  const handleReveal = () => {
-    setPhoneRevealed(true);
-    setSmsToast(true);
-    setTimeout(() => setSmsToast(false), 5200);
+  // The number is not in the map payload — it is issued per request by
+  // /api/reveal-phone, which also texts the member that someone asked for it.
+  const handleReveal = async () => {
+    if (revealState === "loading" || phone) return;
+    setRevealState("loading");
+
+    try {
+      const res = await fetch("/api/reveal-phone", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ slug: pilot.slug, lang: locale }),
+      });
+      const data = (await res.json()) as { phone?: string; sms?: string };
+
+      if (!res.ok || !data.phone) {
+        setRevealState(res.status === 429 ? "rate-limited" : "error");
+        return;
+      }
+
+      setPhone(data.phone);
+      setRevealState("idle");
+
+      // Only claim the member was notified when a message actually went out.
+      if (data.sms === "sent") {
+        setSmsToast(true);
+        setTimeout(() => setSmsToast(false), 5200);
+      }
+    } catch {
+      setRevealState("error");
+    }
   };
 
   const insta = pilot.instagram ? `https://instagram.com/${pilot.instagram}` : null;
@@ -623,15 +652,39 @@ export function ProfilePanel({
             </a>
 
             {/* Phone reveal */}
-            {!phoneRevealed ? (
-              <button
-                type="button"
-                onClick={handleReveal}
-                className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-full border-none bg-iris px-6 py-3 font-[family-name:var(--font-display)] text-sm font-semibold uppercase tracking-[.04em] text-white transition-colors hover:bg-iris-700"
-              >
-                <Icon name="phone" size={15} stroke="#fff" />
-                {t("Me joindre — révéler le téléphone", "Contact me — reveal phone")}
-              </button>
+            {!phone ? (
+              pilot.has_phone === false ? null : (
+                <>
+                  <button
+                    type="button"
+                    onClick={handleReveal}
+                    disabled={revealState === "loading"}
+                    className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-full border-none bg-iris px-6 py-3 font-[family-name:var(--font-display)] text-sm font-semibold uppercase tracking-[.04em] text-white transition-colors hover:bg-iris-700 disabled:cursor-wait disabled:opacity-70"
+                  >
+                    <Icon name="phone" size={15} stroke="#fff" />
+                    {revealState === "loading"
+                      ? t("Un instant…", "One moment…")
+                      : t("Me joindre — révéler le téléphone", "Contact me — reveal phone")}
+                  </button>
+
+                  {(revealState === "error" || revealState === "rate-limited") && (
+                    <div
+                      className="font-[family-name:var(--font-body)] text-[13px]"
+                      style={{ color: "var(--fg2)", padding: "0 2px" }}
+                    >
+                      {revealState === "rate-limited"
+                        ? t(
+                            "Trop de demandes pour l’instant. Réessayez dans quelques minutes ou écrivez par courriel.",
+                            "Too many requests right now. Try again in a few minutes, or send an email.",
+                          )
+                        : t(
+                            "Impossible d’afficher le numéro pour le moment. Le courriel ci-dessus fonctionne toujours.",
+                            "Couldn’t load the number right now. The email above still works.",
+                          )}
+                    </div>
+                  )}
+                </>
+              )
             ) : (
               <div
                 className="flex items-center gap-3"
@@ -651,11 +704,11 @@ export function ProfilePanel({
                     {t("Téléphone", "Phone")}
                   </div>
                   <a
-                    href={`tel:${pilot.phone.replace(/[^0-9+]/g, "")}`}
+                    href={`tel:${phone.replace(/[^0-9+]/g, "")}`}
                     className="font-[family-name:var(--font-body)] text-[17px] font-semibold no-underline"
                     style={{ color: "var(--color-ink)" }}
                   >
-                    {pilot.phone}
+                    {phone}
                   </a>
                 </div>
               </div>
