@@ -3,9 +3,8 @@
 import Image from "next/image";
 import { Icon } from "./icon";
 import type { Locale } from "@/lib/i18n";
+import { WP_SITE_URL as WP } from "@/lib/site";
 import type { AuthState } from "@/lib/use-auth";
-
-const WP = "https://dev.dronenetwork.ca";
 
 const LINKS: { fr: string; en: string; href: string }[] = [
   { fr: "À propos", en: "About", href: `${WP}/#apropos` },

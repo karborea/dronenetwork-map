@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { WP_SITE_URL as WP_BASE } from "./site";
 
 /**
  * Cross-subdomain login probe. The WordPress backend (dev.dronenetwork.ca)
@@ -17,8 +18,6 @@ export interface AuthState {
   registerUrl: string;
   dashboardUrl: string;
 }
-
-const WP_BASE = "https://dev.dronenetwork.ca";
 
 const FALLBACK: Omit<AuthState, "loading" | "loggedIn" | "displayName"> = {
   loginUrl: `${WP_BASE}/login/`,

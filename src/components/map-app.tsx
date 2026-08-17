@@ -59,16 +59,6 @@ export function MapApp({ pilots }: MapAppProps) {
     setSheetExpanded(false);
   };
 
-  const handleHome = () => {
-    setQuery("");
-    setMemberType("all");
-    setActiveSpecs([]);
-    setSelected(null);
-    setSheetExpanded(false);
-    setSpecsSheetOpen(false);
-    setMenuOpen(false);
-  };
-
   const filtered = useMemo(() => {
     const q = query.trim().toUpperCase();
     return pilots.filter((p) => {
@@ -105,7 +95,6 @@ export function MapApp({ pilots }: MapAppProps) {
         <MobileHeader
           locale={locale}
           onLocaleChange={setLocale}
-          onHome={handleHome}
           onOpenMenu={() => setMenuOpen(true)}
         />
 
@@ -173,7 +162,6 @@ export function MapApp({ pilots }: MapAppProps) {
       <Header
         locale={locale}
         onLocaleChange={setLocale}
-        onHome={handleHome}
         onOpenMenu={() => setMenuOpen(true)}
         auth={auth}
       />

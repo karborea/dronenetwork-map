@@ -1,13 +1,12 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import type { Locale } from "@/lib/i18n";
+import { WP_SITE_URL } from "@/lib/site";
 
 interface MobileHeaderProps {
   locale: Locale;
   onLocaleChange: (locale: Locale) => void;
-  onHome: () => void;
   onOpenMenu: () => void;
 }
 
@@ -18,14 +17,12 @@ interface MobileHeaderProps {
 export function MobileHeader({
   locale,
   onLocaleChange,
-  onHome,
   onOpenMenu,
 }: MobileHeaderProps) {
   return (
     <header className="relative z-50 flex h-[60px] flex-shrink-0 items-center justify-between border-b border-[#1c1d22] bg-onyx px-4">
-      <Link
-        href="/"
-        onClick={onHome}
+      <a
+        href={WP_SITE_URL}
         className="flex cursor-pointer items-center"
         aria-label="Drone Network — accueil"
       >
@@ -37,7 +34,7 @@ export function MobileHeader({
           priority
           style={{ width: "auto", height: "28px" }}
         />
-      </Link>
+      </a>
 
       <div className="flex items-center gap-2.5">
         <div className="flex overflow-hidden rounded-full border border-[#34363c]">

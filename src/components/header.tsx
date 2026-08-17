@@ -1,14 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import type { Locale } from "@/lib/i18n";
+import { WP_SITE_URL } from "@/lib/site";
 import type { AuthState } from "@/lib/use-auth";
 
 interface HeaderProps {
   locale: Locale;
   onLocaleChange: (locale: Locale) => void;
-  onHome?: () => void;
   onOpenMenu: () => void;
   auth: AuthState;
 }
@@ -18,14 +17,13 @@ interface HeaderProps {
  * login-aware CTAs (Connexion + Devenir membre when logged out, Mon espace when
  * logged in) · hamburger that opens the full slide-over menu.
  */
-export function Header({ locale, onLocaleChange, onHome, onOpenMenu, auth }: HeaderProps) {
+export function Header({ locale, onLocaleChange, onOpenMenu, auth }: HeaderProps) {
   const t = (fr: string, en: string) => (locale === "fr" ? fr : en);
 
   return (
     <header className="relative z-40 flex h-[92px] flex-shrink-0 items-center justify-between border-b border-[#1c1d22] bg-onyx px-8">
-      <Link
-        href="/"
-        onClick={onHome}
+      <a
+        href={WP_SITE_URL}
         className="flex cursor-pointer items-center"
         aria-label="Drone Network — accueil"
       >
@@ -37,7 +35,7 @@ export function Header({ locale, onLocaleChange, onHome, onOpenMenu, auth }: Hea
           priority
           style={{ width: "auto", height: "44px" }}
         />
-      </Link>
+      </a>
 
       <div className="flex items-center gap-4">
         <div className="flex overflow-hidden rounded-full border border-[#34363c]">
