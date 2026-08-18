@@ -5,4 +5,4 @@
  * to the marketing site must be absolute. Keep this in one place: the header
  * logo, the nav menu links and the auth probe all point at the same origin.
  */
-export const WP_SITE_URL = "https://dev.dronenetwork.ca";
+export const WP_SITE_URL = "https://dronenetwork.ca";

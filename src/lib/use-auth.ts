@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { WP_SITE_URL as WP_BASE } from "./site";
 
 /**
- * Cross-subdomain login probe. The WordPress backend (dev.dronenetwork.ca)
+ * Cross-subdomain login probe. The WordPress backend (dronenetwork.ca)
  * shares its auth cookie across *.dronenetwork.ca (COOKIE_DOMAIN), so this map
  * app (app.dronenetwork.ca) can read the session via a credentialed fetch to
  * GET /wp-json/dn/v1/me. Falls back to logged-out with sensible WP URLs if the
